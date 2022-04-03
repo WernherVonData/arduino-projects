@@ -21,6 +21,8 @@ float readTemperature() {
 void setup() {
   analogReference(INTERNAL);
   Serial.begin(9600);
+  delay(100);
+  current_temperature = readTemperature();
 }
 
 void loop() {
@@ -32,7 +34,8 @@ void loop() {
   } else {
     temp_temperature += readTemperature();
   }
-  lcd.print(String(current_temperature));
+
+  lcd.print(String(current_temperature)+"*C");
   iterator += 1;
   delay(100);
 }
