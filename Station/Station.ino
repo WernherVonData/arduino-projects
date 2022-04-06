@@ -7,8 +7,8 @@ const float max_pin_voltage = 1.1; // defined by the analogReference()
 const float analog_size = 1024.0; // analog reads on 10 bits of information
 const float offset_voltage = 0.5;
 
-int iterator = 0;
-const int loop_max = 100;
+int counter = 0;
+const int counter_max = 100;
 float current_temperature = 0;
 float temp_temperature = 0;
 
@@ -26,16 +26,16 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(iterator);
-  if (iterator == loop_max){
-    current_temperature = temp_temperature/(float)loop_max;
+  Serial.println(counter);
+  if (counter == counter_max){
+    current_temperature = temp_temperature/(float)counter_max;
     temp_temperature = 0;
-    iterator = 0;
+    counter = 0;
   } else {
     temp_temperature += readTemperature();
   }
 
   lcd.print(String(current_temperature)+"*C");
-  iterator += 1;
+  counter += 1;
   delay(100);
 }
