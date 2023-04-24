@@ -3,10 +3,63 @@
 #include <Adafruit_PCD8544.h>
 #include <Fonts/Org_01.h>
 
-Adafruit_PCD8544 display{7, 6, 5, 4, 3};
+struct HeartData
+{
+  HeartData(short offset, short length) : offset(offset), length(length) {}
+  short offset;
+  short length;
+};
 
 constexpr int WIDTH = 84;
 constexpr int HEIGHT = 48;
+constexpr int HEART_DATA_SIZE = 43;
+
+const HeartData HEART_DATA[] = {
+    {5, 6},
+    {4, 9},
+    {3, 11},
+    {2, 13},
+    {1, 15},
+    {0, 17},
+    {0, 18},
+    {0, 18},
+    {0, 19},
+    {0, 19},
+    {0, 19},
+    {0, 20},
+    {0, 20},
+    {0, 20},
+    {0, 20},
+    {0, 20},
+    {0, 19},
+    {0, 19},
+    {0, 19},
+    {0, 19},
+    {0, 18},
+    {0, 18},
+    {0, 17},
+    {0, 17},
+    {0, 16},
+    {0, 15},
+    {0, 14},
+    {0, 13},
+    {0, 12},
+    {0, 11},
+    {0, 10},
+    {0, 9},
+    {0, 8},
+    {0, 7},
+    {0, 6},
+    {0, 5},
+    {0, 4},
+    {0, 3},
+    {0, 2},
+    {0, 2},
+    {0, 1},
+    {0, 1},
+    {0, 1}};
+
+Adafruit_PCD8544 display{7, 6, 5, 4, 3};
 
 void setup()
 {
@@ -71,7 +124,21 @@ void loop()
   display.setCursor(0, 0);
   display.println("I chce zawsze");
   display.println("");
-  display.println("byc z Toba");
+  display.println("byc z Wami");
   display.display();
   delay(5000);
+
+  display.clearDisplay();
+  short heartY = 4;
+  for (int i = 0; i < HEART_DATA_SIZE; ++i)
+  {
+    for (short x = HEART_DATA[i].offset; x < HEART_DATA[i].offset + HEART_DATA[i].length; ++x)
+    {
+      display.drawPixel(WIDTH / 2 - x, heartY, BLACK);
+      display.drawPixel(WIDTH / 2 + x, heartY, BLACK);
+    }
+    ++heartY;
+  }
+  display.display();
+  delay(10000);
 }
