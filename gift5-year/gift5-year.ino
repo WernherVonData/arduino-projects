@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
-#include <Fonts/Org_01.h>
 
 struct HeartData
 {
@@ -13,6 +12,50 @@ struct HeartData
 constexpr int WIDTH = 84;
 constexpr int HEIGHT = 48;
 constexpr int HEART_DATA_SIZE = 43;
+
+const unsigned char PROGMEM z_uml[] = {
+    B00100000,
+    B00000000,
+    B11111000,
+    B00010000,
+    B00100000,
+    B01000000,
+    B11111000,
+    B00000000,
+};
+
+const unsigned char PROGMEM e_uml[] = {
+    B00000000,
+    B00000000,
+    B01110000,
+    B10001000,
+    B11111000,
+    B10000000,
+    B01110000,
+    B00100000,
+};
+
+const unsigned char PROGMEM c_acute[] = {
+    B00010000,
+    B00100000,
+    B01110000,
+    B10001000,
+    B10000000,
+    B10001000,
+    B01110000,
+    B00000000,
+};
+
+const unsigned char PROGMEM l_acute[] = {
+    B00110000,
+    B00010000,
+    B00011000,
+    B00110000,
+    B00010000,
+    B00010000,
+    B00111000,
+    B00000000,
+};
 
 const HeartData HEART_DATA[] = {
     {5, 6},
@@ -71,64 +114,72 @@ void setup()
   display.display();
 }
 
-void loop()
+void resetDisplay(int text_size)
 {
   display.clearDisplay();
+  display.setTextSize(text_size);
   display.setTextColor(BLACK);
-
-  display.setTextSize(2);
   display.setCursor(0, 0);
+}
+
+void updateDisplay(int delay_time)
+{
+  display.display();
+  delay(delay_time);
+}
+
+void loop()
+{
+  resetDisplay(2);
   display.println("Kochana");
   display.println("Eluniu!");
-  display.display();
-  delay(5000);
+  updateDisplay(5000);
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
+  resetDisplay(1);
   display.println("Ostatnie 5 lat");
   display.println("");
-  display.println("Bylo");
+  display.print("By");
+  display.drawBitmap(display.getCursorX(), display.getCursorY(), l_acute, 8, 8, BLACK);
+  display.setCursor(display.getCursorX() + 7, display.getCursorY());
+  display.print("o");
+  display.setCursor(0, display.getCursorY() + 8);
   display.println("najlepszym...");
-  display.display();
-  delay(5000);
+  updateDisplay(5000);
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
+  resetDisplay(1);
   display.println("Okresem");
   display.println("");
-  display.println("Mojego zycia");
-  display.display();
-  delay(5000);
+  display.print("Mojego ");
+  display.drawBitmap(display.getCursorX(), display.getCursorY(), z_uml, 8, 8, BLACK);
+  display.setCursor(display.getCursorX() + 7, display.getCursorY());
+  display.print("ycia");
+  updateDisplay(5000);
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
+  resetDisplay(1);
   display.println("Kocham Ciebie");
   display.println("");
-  display.println("i Kasie");
-  display.display();
-  delay(5000);
+  display.print("i Kasi");
+  display.drawBitmap(display.getCursorX(), display.getCursorY(), e_uml, 8, 8, BLACK);
+  updateDisplay(5000);
 
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setCursor(0, 0);
+  resetDisplay(2);
   display.println("Bardzo");
   display.println("Mocno!");
-  display.display();
-  delay(5000);
+  updateDisplay(5000);
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println("I chce zawsze");
+  resetDisplay(1);
+  display.print("I chc");
+  display.drawBitmap(display.getCursorX(), display.getCursorY(), e_uml, 8, 8, BLACK);
+  display.setCursor(display.getCursorX() + 10, display.getCursorY());
+  display.println("zawsze");
   display.println("");
-  display.println("byc z Wami");
-  display.display();
-  delay(5000);
+  display.print("by");
+  display.drawBitmap(display.getCursorX(), display.getCursorY(), c_acute, 8, 8, BLACK);
+  display.setCursor(display.getCursorX() + 10, display.getCursorY());
+  display.print("z Wami");
+  updateDisplay(5000);
 
-  display.clearDisplay();
+  resetDisplay(1);
   short heartY = 4;
   for (int i = 0; i < HEART_DATA_SIZE; ++i)
   {
@@ -139,6 +190,5 @@ void loop()
     }
     ++heartY;
   }
-  display.display();
-  delay(10000);
+  updateDisplay(10000);
 }
