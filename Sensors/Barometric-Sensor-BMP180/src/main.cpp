@@ -29,7 +29,7 @@ void loop()
   float pressure = static_cast<float>(bmp.readPressure()) / 100.0f;
   Serial.print("Pressure ");
   Serial.print(pressure);
-  Serial.println(" Pa");
+  Serial.println(" hPa");
   Serial.println("*****");
 
   delay(1000);
