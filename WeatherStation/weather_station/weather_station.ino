@@ -4,22 +4,28 @@
 #include <Adafruit_BMP085.h>
 #include <DHT.h>
 
-#include <Adafruit_GFX.h>
-#include <Adafruit_PCD8544.h>
-
 #define DHT11_PIN 2
-#define LED_PIN 8
+#define CS_PIN 10
+
+#define HUMIDITY_LINE 0x02
+#define TEMPERATURE_LINE 0x04
+#define PRESSURE_LINE 0x07
 
 namespace
 {
 DHT dht11(DHT11_PIN, DHT11);
 Adafruit_BMP085 bmp;
-Adafruit_PCD8544 display{7, 6, 5, 4, 3};
 }
 
 
 void setup()
 {
+  pinMode(CS_PIN, OUTPUT);
+  SPI.begin();
+  sendData(0x09, 0x00); // Decode mode: none
+  sendData(0x0A, 0x0F); // Intensity: 3 (0x00 to 0x0F)
+  sendData(0x0B, 0x07); // Scan limit: 7 (all digits)
+  sendData(0x0C, 0x01); // Shutdown: 1 (normal operation)
   Serial.begin(9600);
   dht11.begin();
 
@@ -30,8 +36,10 @@ void setup()
     {
     }
   }
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
+  for (byte i = 1; i <= 8; ++i) {
+    sendData(i, 0x00);
+  }
+  delay(2000);
 }
 
 void loop()
@@ -52,11 +60,23 @@ void loop()
     Serial.print(dht_humidity);
     Serial.println("%");
     Serial.print("Temperature: ");
-    Serial.print((dht_temp + bmp_temp) / 2.0);
+    float temparature = (dht_temp + bmp_temp) / 2.0;
+    Serial.print(temparature);
     Serial.println("°C");
     Serial.print("Pressure ");
     Serial.print(bmp_pressure);
     Serial.println(" hPa");
     Serial.println("*****");
+    Serial.println((byte)dht_humidity);
+    sendData(HUMIDITY_LINE, (byte)dht_humidity);
+    sendData(TEMPERATURE_LINE, (byte)temparature);
+    delay(1000);
   }
+}
+
+void sendData(byte register_address, byte value) {
+  digitalWrite(CS_PIN, LOW);
+  SPI.transfer(register_address);
+  SPI.transfer(value);
+  digitalWrite(CS_PIN, HIGH);
 }
